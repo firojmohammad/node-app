@@ -1,5 +1,6 @@
 name: Docker Image node
 
+
 on:
   push:
     branches: [ main ]
@@ -9,39 +10,38 @@ on:
 jobs:
 
   build:
-
-    runs-on: self-hosted
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:hem
-    - name: Build and Push Docker Image
-      uses: mr-smithers-excellent/docker-build-push@v4
-      with:
-       image: firoj0786/demo
-       context: .
-       push: true
-       tags:
-          user/image:latest
-       registry: docker.io
-       username: ${{ secrets.DOCKER_USERNAME }}
-       password: ${{ secrets.DOCKER_PASSWORD }}
-       
-       
-       
-       
- 
-
-Deployment
-
-on:
-  push:
-    branches:
-      - main 
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Deploy-stage
-      run: docker-compose up -d
       
+
+    runs-on: self-hosted
+    steps:
+    
+    - name: build_push_tag of develop
+ 
+      env:      
+       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+       USERNAME: ${{ secrets.DOCKER_USERNAME }}  
+      
+     
+      run: |
+            
+             docker login -u $USERNAME -p $PASSWORD
+             docker build -t firoj0786/node:${{ github.sha }} -f Dockerfile .  
+             docker push firoj0786/node:${{ github.sha }}
+         
+             
+  deploy:
+ 
+    runs-on: self-hosted
+    steps:
+    
+    - name: deploy app2
+ 
+      env:
+       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+       USERNAME: ${{ secrets.DOCKER_USERNAME }}  
+      run: |
+      
+              docker login -u $USERNAME -p $PASSWORD
+              docker build -t firoj0786/node:${{ github.sha }} -f Dockerfile .   
+              docker push firoj0786/node:${{ github.sha }}
+              docker-compose  up -d 
