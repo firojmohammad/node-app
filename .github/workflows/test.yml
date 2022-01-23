@@ -42,6 +42,4 @@ jobs:
       run: |
       
               docker login -u $USERNAME -p $PASSWORD
-              docker build -t firoj0786/node:${{ github.sha }} -f Dockerfile .   
-              docker push firoj0786/node:${{ github.sha }}
               docker-compose  up -d 
